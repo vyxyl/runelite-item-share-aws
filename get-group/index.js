@@ -4,16 +4,19 @@ const AWS = require('aws-sdk');
 const client = new AWS.SecretsManager({ region: "us-east-2" });
 const MongoClient = require("mongodb").MongoClient;
 
-
 exports.handler = async(event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
 
+    const id = event["queryStringParameters"]['id'];
+
     const db = await getDatabase();
-    const players = await db.collection("groups");
+
+    const group = await db.collection("groups").findOne({ id });
+    group._id = undefined;
 
     const response = {
         statusCode: 200,
-        body: JSON.stringify(players)
+        body: JSON.stringify(group)
     };
 
     return response;
