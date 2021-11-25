@@ -8,8 +8,9 @@ exports.handler = async(event, context) => {
     try {
         context.callbackWaitsForEmptyEventLoop = false;
         const id = getId(event);
-        if (id) {
-            const group = await getGroup(id);
+        const player = getPlayer(event);
+        if (id && player) {
+            const group = await updateGroup(id, player);
             return success(group);
         } else {
             return badRequest();
@@ -25,11 +26,14 @@ function getId(event) {
     return id;
 }
 
-async function getGroup(id) {
+function getPlayer(event) {
+    return event.body;
+}
+
+async function updateGroup(id, player) {
     const db = await getDatabase();
-    const group = await db.collection("groups").findOne({ id });
-    group['_id'] = undefined;
-    return group;
+    db.collection("groups").updateOne({ id, players: { $elemMatch: { name: player.name } } }, { $addToSet: { players: player }, $set: { updatedDate: new Date() } }, { upsert: true });
+    return {};
 }
 
 // common
@@ -47,10 +51,10 @@ function badRequest() {
     };
 }
 
-function success(group) {
+function success(doc) {
     return {
         statusCode: 200,
-        body: JSON.stringify(group)
+        body: JSON.stringify(doc)
     };
 }
 

@@ -6,27 +6,44 @@ const MongoClient = require("mongodb").MongoClient;
 const { "v4": uuidv4 } = require('uuid');
 
 exports.handler = async(event, context) => {
-    context.callbackWaitsForEmptyEventLoop = false;
+    try {
+        context.callbackWaitsForEmptyEventLoop = false;
+        const doc = await createGroup();
+        return success(doc);
+    } catch (error) {
+        return serverError();
+    }
+};
 
+async function createGroup() {
     const db = await getDatabase();
-
-    const doc = {
-        id: uuidv4(),
-        players: []
-    };
-
+    const doc = { id: uuidv4(), players: [], updatedDate: new Date() };
     await db.collection("groups").insertOne(doc);
     doc['_id'] = undefined;
+    return doc;
+}
 
-    const response = {
+// common
+function serverError() {
+    return {
+        statusCode: 500,
+        body: JSON.stringify({})
+    };
+}
+
+function badRequest() {
+    return {
+        statusCode: 400,
+        body: JSON.stringify({})
+    };
+}
+
+function success(doc) {
+    return {
         statusCode: 200,
         body: JSON.stringify(doc)
     };
-
-    return response;
-};
-
-// common
+}
 
 let dbCache = null;
 

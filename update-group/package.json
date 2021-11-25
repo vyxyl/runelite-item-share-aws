@@ -1,0 +1,8 @@
+{
+    "name": "item-share-update-group",
+    "version": "1.0.0",
+    "dependencies": {
+        "uuid": "latest",
+        "mongodb": "latest"
+    }
+}
