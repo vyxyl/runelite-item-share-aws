@@ -7,11 +7,11 @@ const MongoClient = require("mongodb").MongoClient;
 exports.handler = async(event, context) => {
     try {
         context.callbackWaitsForEmptyEventLoop = false;
-        const id = getId(event);
+        const groupId = getGroupId(event);
         const player = getPlayer(event);
-        if (id && player) {
-            const group = await updateGroup(id, player);
-            return success(group);
+        if (groupId && player) {
+            const updatedPlayer = await savePlayer(groupId, player);
+            return success(updatedPlayer);
         } else {
             return badRequest();
         }
@@ -20,50 +20,43 @@ exports.handler = async(event, context) => {
     }
 };
 
-function getId(event) {
-    const queryStringParameters = event["queryStringParameters"];
-    const id = queryStringParameters ? queryStringParameters['id'] : undefined;
-    return id;
+function getGroupId(event) {
+    const params = event["queryStringParameters"];
+    const groupId = params ? params['groupId'] : undefined;
+    return typeof groupId === 'string' ? groupId : undefined;
 }
 
 function getPlayer(event) {
-    return JSON.parse(event.body);
+    return event && event.body && JSON.parse(event.body);
 }
 
-async function updateGroup(id, player) {
+async function savePlayer(groupId, player) {
+    player.groupId = groupId;
+    player.updatedDate = new Date();
+
     const db = await getDatabase();
-
-    const updatedDate = new Date();
-    player.updatedDate = updatedDate;
-
-    const result = await db.collection("groups").update({ 'id': id, 'players.name': { $ne: player.name } }, { $push: { players: player }, $set: { updatedDate } })
-
-    if (result.matchedCount === 0) {
-        db.collection("groups").update({ 'id': id, 'players.name': player.name }, { $set: { 'players.$': player, updatedDate } })
-    }
-
-    return {};
+    return await db.collection("players").updateOne({ groupId, name: player.name }, { $set: player }, { upsert: true })
 }
 
 // common
-function serverError() {
+function serverError(message = "") {
     return {
         statusCode: 500,
-        body: JSON.stringify({})
+        body: JSON.stringify({ message })
     };
 }
 
-function badRequest() {
+function badRequest(message = "") {
     return {
         statusCode: 400,
-        body: JSON.stringify({})
+        body: JSON.stringify({ message })
     };
 }
 
-function success(doc) {
+function success(data = {}) {
     return {
         statusCode: 200,
-        body: JSON.stringify(doc)
+        body: JSON.stringify(data)
     };
 }
 

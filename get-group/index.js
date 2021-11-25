@@ -7,10 +7,10 @@ const MongoClient = require("mongodb").MongoClient;
 exports.handler = async(event, context) => {
     try {
         context.callbackWaitsForEmptyEventLoop = false;
-        const id = getId(event);
-        if (id) {
-            const group = await getGroup(id);
-            return success(group);
+        const groupId = getGroupId(event);
+        if (groupId) {
+            const players = await getPlayers(groupId);
+            return success(players);
         } else {
             return badRequest();
         }
@@ -19,38 +19,38 @@ exports.handler = async(event, context) => {
     }
 };
 
-function getId(event) {
-    const queryStringParameters = event["queryStringParameters"];
-    const id = queryStringParameters ? queryStringParameters['id'] : undefined;
-    return id;
+function getGroupId(event) {
+    const params = event["queryStringParameters"];
+    const groupId = params ? params['groupId'] : undefined;
+    return typeof groupId === 'string' ? groupId : undefined;
 }
 
-async function getGroup(id) {
+async function getPlayers(groupId) {
     const db = await getDatabase();
-    const group = await db.collection("groups").findOne({ id });
-    group['_id'] = undefined;
-    return group;
+    return new Promise((resolve, reject) => {
+        db.collection("players").find({ groupId }, { sort: { name: 1 } }).toArray((error, items) => error ? reject(error) : resolve(items));
+    });
 }
 
 // common
-function serverError() {
+function serverError(message = "") {
     return {
         statusCode: 500,
-        body: JSON.stringify({})
+        body: JSON.stringify({ message })
     };
 }
 
-function badRequest() {
+function badRequest(message = "") {
     return {
         statusCode: 400,
-        body: JSON.stringify({})
+        body: JSON.stringify({ message })
     };
 }
 
-function success(group) {
+function success(data = {}) {
     return {
         statusCode: 200,
-        body: JSON.stringify(group)
+        body: JSON.stringify(data)
     };
 }
 
