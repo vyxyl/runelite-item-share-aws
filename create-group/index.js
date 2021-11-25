@@ -16,6 +16,7 @@ exports.handler = async(event, context) => {
     };
 
     await db.collection("groups").insertOne(doc);
+    doc['_id'] = undefined;
 
     const response = {
         statusCode: 200,
