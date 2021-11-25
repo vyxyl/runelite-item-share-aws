@@ -1,0 +1,8 @@
+{
+    "name": "create-item-share-group",
+    "version": "1.0.0",
+    "dependencies": {
+        "mongodb": "latest",
+        "aws-sdk": "latest"
+    }
+}
