@@ -27,12 +27,21 @@ function getId(event) {
 }
 
 function getPlayer(event) {
-    return event.body;
+    return JSON.parse(event.body);
 }
 
 async function updateGroup(id, player) {
     const db = await getDatabase();
-    db.collection("groups").updateOne({ id, players: { $elemMatch: { name: player.name } } }, { $addToSet: { players: player }, $set: { updatedDate: new Date() } }, { upsert: true });
+
+    const updatedDate = new Date();
+    player.updatedDate = updatedDate;
+
+    const result = await db.collection("groups").update({ 'id': id, 'players.name': { $ne: player.name } }, { $push: { players: player }, $set: { updatedDate } })
+
+    if (result.matchedCount === 0) {
+        db.collection("groups").update({ 'id': id, 'players.name': player.name }, { $set: { 'players.$': player, updatedDate } })
+    }
+
     return {};
 }
 
