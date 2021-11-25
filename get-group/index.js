@@ -3,23 +3,17 @@ const MONGODB_SYNC_FREQUENCY_MS = 15 * 1000;
 const AWS = require('aws-sdk');
 const client = new AWS.SecretsManager({ region: "us-east-2" });
 const MongoClient = require("mongodb").MongoClient;
-const { "v4": uuidv4 } = require('uuid');
+
 
 exports.handler = async(event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
 
     const db = await getDatabase();
-
-    const doc = {
-        id: uuidv4(),
-        players: []
-    };
-
-    await db.collection("groups").insertOne(doc);
+    const players = await db.collection("groups");
 
     const response = {
         statusCode: 200,
-        body: JSON.stringify(doc)
+        body: JSON.stringify(players)
     };
 
     return response;

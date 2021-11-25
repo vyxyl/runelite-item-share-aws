@@ -1,9 +1,8 @@
 {
-    "name": "create-item-share-group",
+    "name": "item-share-create-group",
     "version": "1.0.0",
     "dependencies": {
-        "faker": "latest",
-        "mongodb": "latest",
-        "uuid": "^8.3.2"
+        "uuid": "latest",
+        "mongodb": "latest"
     }
 }

@@ -3,7 +3,22 @@
         {
             "type": "aws-sam",
             "request": "direct-invoke",
-            "name": "get-group:index.handler (nodejs14.x)",
+            "name": "create-group",
+            "invokeTarget": {
+                "target": "code",
+                "projectRoot": "${workspaceFolder}/create-group",
+                "lambdaHandler": "index.handler"
+            },
+            "lambda": {
+                "runtime": "nodejs14.x",
+                "payload": {},
+                "environmentVariables": {}
+            }
+        },
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "get-group",
             "invokeTarget": {
                 "target": "code",
                 "projectRoot": "${workspaceFolder}/get-group",
