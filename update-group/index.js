@@ -10,8 +10,11 @@ exports.handler = async(event, context) => {
         const groupId = getGroupId(event);
         const player = getPlayer(event);
         if (groupId && player) {
-            const updatedPlayer = await savePlayer(groupId, player);
-            return success(updatedPlayer);
+            await savePlayer(groupId, player);
+            return success({
+                groupId,
+                name: player.name
+            });
         } else {
             return badRequest();
         }
@@ -35,7 +38,7 @@ async function savePlayer(groupId, player) {
     player.updatedDate = new Date();
 
     const db = await getDatabase();
-    return await db.collection("players").updateOne({ groupId, name: player.name }, { $set: player }, { upsert: true })
+    await db.collection("players").updateOne({ groupId, name: player.name }, { $set: player }, { upsert: true })
 }
 
 // common
