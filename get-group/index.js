@@ -12,18 +12,12 @@ exports.handler = async(event, context) => {
             const players = await getPlayers(groupId);
             return success(players);
         } else {
-            return badRequest();
+            return badRequest("Group ID was not provided or is in an incorrect format");
         }
     } catch (error) {
         return serverError();
     }
 };
-
-function getGroupId(event) {
-    const params = event["queryStringParameters"];
-    const groupId = params ? params['groupId'] : undefined;
-    return typeof groupId === 'string' ? groupId : undefined;
-}
 
 async function getPlayers(groupId) {
     const db = await getDatabase();
@@ -33,6 +27,13 @@ async function getPlayers(groupId) {
 }
 
 // common
+function getGroupId(event) {
+    const params = event["queryStringParameters"];
+    const groupId = params ? params['groupId'] : undefined;
+    const regex = new RegExp(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/);
+    return regex.test(groupId) ? groupId : undefined;
+}
+
 function serverError(message = "") {
     return {
         statusCode: 500,

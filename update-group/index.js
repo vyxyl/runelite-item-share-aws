@@ -15,19 +15,15 @@ exports.handler = async(event, context) => {
                 groupId,
                 name: player.name
             });
+        } else if (!groupId) {
+            return badRequest("Group ID was not provided or is in an incorrect format");
         } else {
-            return badRequest();
+            return badRequest("Request body was not provided");
         }
     } catch (error) {
         return serverError();
     }
 };
-
-function getGroupId(event) {
-    const params = event["queryStringParameters"];
-    const groupId = params ? params['groupId'] : undefined;
-    return typeof groupId === 'string' ? groupId : undefined;
-}
 
 function getPlayer(event) {
     return event && event.body && JSON.parse(event.body);
@@ -42,6 +38,13 @@ async function savePlayer(groupId, player) {
 }
 
 // common
+function getGroupId(event) {
+    const params = event["queryStringParameters"];
+    const groupId = params ? params['groupId'] : undefined;
+    const regex = new RegExp(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/);
+    return regex.test(groupId) ? groupId : undefined;
+}
+
 function serverError(message = "") {
     return {
         statusCode: 500,
