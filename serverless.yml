@@ -50,3 +50,16 @@ functions:
           path: /player
           method: post
           private: true
+
+  get-player-names:
+    handler: handlers/get-player-names.handler
+    environment:
+      MONGO_DB_USERNAME: ${ssm:item-share-mongodb-username}
+      MONGO_DB_PASSWORD: ${ssm:item-share-mongodb-password}
+      MONGO_DB_CLUSTER: ${ssm:item-share-mongodb-cluster}
+      MONGO_DB_DATABASE: ${ssm:item-share-mongodb-database}
+    events:
+      - http:
+          path: /player-names
+          method: get
+          private: true
