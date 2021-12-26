@@ -1,0 +1,6 @@
+.build
+.vscode
+.serverless
+.env
+node_modules
+notes.txt

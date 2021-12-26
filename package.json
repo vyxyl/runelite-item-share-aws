@@ -1,0 +1,19 @@
+{
+    "name": "runelite-item-share-aws",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "sls offline start --httpPort 5000"
+    },
+    "dependencies": {
+        "uuid": "^8.3.2",
+        "aws-lambda": "latest",
+        "aws-sdk": "latest",
+        "mongodb": "^4.2.2"
+    },
+    "devDependencies": {
+        "@types/uuid": "^8.3.3",
+        "@types/aws-lambda": "^8.10.88",
+        "serverless-offline": "^8.3.1",
+        "serverless-plugin-typescript": "^2.1.0"
+    }
+}

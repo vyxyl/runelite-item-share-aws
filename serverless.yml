@@ -1,0 +1,52 @@
+service: runelite-item-share
+
+frameworkVersion: '2 || 3'
+variablesResolutionMode: 20210326
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+
+  apiGateway:
+    apiKeys:
+      - runelite-item-share-api-key
+    usagePlan:
+      quota:
+        limit: 5000
+        offset: 2
+        period: MONTH
+      throttle:
+        burstLimit: 200
+        rateLimit: 100
+
+functions:
+  get-player:
+    handler: handlers/get-player.handler
+    environment:
+      MONGO_DB_USERNAME: ${ssm:item-share-mongodb-username}
+      MONGO_DB_PASSWORD: ${ssm:item-share-mongodb-password}
+      MONGO_DB_CLUSTER: ${ssm:item-share-mongodb-cluster}
+      MONGO_DB_DATABASE: ${ssm:item-share-mongodb-database}
+    events:
+      - http:
+          path: /player
+          method: get
+          private: true
+
+  save-player:
+    handler: handlers/save-player.handler
+    environment:
+      MONGO_DB_USERNAME: ${ssm:item-share-mongodb-username}
+      MONGO_DB_PASSWORD: ${ssm:item-share-mongodb-password}
+      MONGO_DB_CLUSTER: ${ssm:item-share-mongodb-cluster}
+      MONGO_DB_DATABASE: ${ssm:item-share-mongodb-database}
+    events:
+      - http:
+          path: /player
+          method: post
+          private: true
