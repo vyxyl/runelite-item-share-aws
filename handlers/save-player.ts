@@ -1,6 +1,6 @@
 import { Handler, Context } from 'aws-lambda';
 import { getDatabase } from '../common/mongodb';
-import { getGroupId, getPlayer } from '../common/request';
+import { getGroupId, getPlayer, getPlayerName } from '../common/request';
 import { badRequest, serverError, success } from '../common/response';
 
 export const handler: Handler = async (event: any, context: Context) => {
@@ -8,13 +8,16 @@ export const handler: Handler = async (event: any, context: Context) => {
     context.callbackWaitsForEmptyEventLoop = false;
 
     const groupId = getGroupId(event);
+    const playerName = getPlayerName(event);
     const player = getPlayer(event);
 
-    if (groupId && player) {
-      await savePlayer(groupId, player);
-      return success({ groupId, name: player.name });
+    if (groupId && playerName && player) {
+      await savePlayer(groupId, playerName, player);
+      return success({ groupId, name: playerName });
     } else if (!groupId) {
       return badRequest('Group ID is invalid');
+    } else if (!playerName) {
+      return badRequest('Player Name is invalid');
     } else if (!player) {
       return badRequest('Player is invalid');
     } else {
@@ -26,7 +29,7 @@ export const handler: Handler = async (event: any, context: Context) => {
   }
 };
 
-async function savePlayer(groupId, player) {
+async function savePlayer(groupId, playerName, player) {
   const saveData = {
     bank: player.bank,
     equipment: player.equipment,
@@ -38,7 +41,7 @@ async function savePlayer(groupId, player) {
   await db
     .collection('players')
     .updateOne(
-      { groupId, name: player.name },
+      { groupId, name: playerName },
       { $set: saveData },
       { upsert: true }
     );
