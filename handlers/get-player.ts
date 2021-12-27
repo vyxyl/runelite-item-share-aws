@@ -8,15 +8,15 @@ export const handler: Handler = async (event: any, context: Context) => {
     context.callbackWaitsForEmptyEventLoop = false;
 
     const groupId = getGroupId(event);
-    const playerName = getPlayerName(event);
+    const name = getPlayerName(event);
 
-    if (groupId && playerName) {
-      const player = await getPlayer(groupId, playerName);
+    if (groupId && name) {
+      const player = await getPlayer(groupId, name);
       return success(player);
     } else if (!groupId) {
       return badRequest('Group ID is invalid');
-    } else if (!playerName) {
-      return badRequest('Player Name is invalid');
+    } else if (!name) {
+      return badRequest('Player name is invalid');
     } else {
       return badRequest('Unable to parse request');
     }
@@ -26,7 +26,7 @@ export const handler: Handler = async (event: any, context: Context) => {
   }
 };
 
-async function getPlayer(groupId, playerName): Promise<any> {
+async function getPlayer(groupId, name): Promise<any> {
   const db = await getDatabase();
-  return await db.collection('players').findOne({ groupId, name: playerName });
+  return await db.collection('players').findOne({ groupId, name });
 }
