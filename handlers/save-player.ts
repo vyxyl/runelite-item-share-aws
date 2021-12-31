@@ -1,44 +1,46 @@
 import { Handler, Context } from 'aws-lambda';
 import { getDatabase } from '../common/mongodb';
-import { getGroupId, getPlayerName, getPlayer } from '../common/request';
-import { badRequest, serverError, success } from '../common/response';
+import { createSavePlayerRequest as getRequest } from '../common/request';
+import {
+  ApiResponse,
+  badRequest,
+  serverError,
+  success,
+} from '../common/response';
 
-export const handler: Handler = async (event: any, context: Context) => {
+export const handler: Handler = async (
+  event: any,
+  context: Context
+): Promise<ApiResponse> => {
+  context.callbackWaitsForEmptyEventLoop = false;
+
   try {
-    context.callbackWaitsForEmptyEventLoop = false;
-
-    const groupId = getGroupId(event);
-    const name = getPlayerName(event);
-    const player = getPlayer(event);
-
-    if (groupId && name && player) {
-      await savePlayer(groupId, name, player);
-      return success({ groupId, name });
-    } else if (!groupId) {
-      return badRequest('Group ID is invalid');
-    } else if (!name) {
-      return badRequest('Player name is invalid');
-    } else if (!player) {
-      return badRequest('Player is invalid');
-    } else {
-      return badRequest('Unable to parse request');
-    }
+    await savePlayer(event);
+    return success();
   } catch (error) {
-    console.log({ error });
-    return serverError();
+    return handleError(error);
   }
 };
 
-async function savePlayer(groupId, name, player) {
+function handleError(error: any) {
+  console.log({ error });
+  return error?.errors ? badRequest(error) : serverError();
+}
+
+async function savePlayer(event: any) {
+  const { groupId, playerName, player } = await getRequest(event);
+  const { bank, equipment, inventory } = player;
+  console.log({ request: { groupId, playerName, player } });
+
   const data = {
-    bank: player.bank,
-    equipment: player.equipment,
-    inventory: player.inventory,
+    bank,
+    equipment,
+    inventory,
     updatedDate: new Date(),
   };
 
   const db = await getDatabase();
   await db
     .collection('players')
-    .updateOne({ groupId, name }, { $set: data }, { upsert: true });
+    .updateOne({ groupId, name: playerName }, { $set: data }, { upsert: true });
 }

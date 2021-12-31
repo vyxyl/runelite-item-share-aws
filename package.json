@@ -5,14 +5,15 @@
         "start": "sls offline start --httpPort 5000"
     },
     "dependencies": {
-        "uuid": "^8.3.2",
         "aws-lambda": "latest",
         "aws-sdk": "latest",
-        "mongodb": "^4.2.2"
+        "mongodb": "^4.2.2",
+        "uuid": "^8.3.2",
+        "yup": "^0.32.11"
     },
     "devDependencies": {
-        "@types/uuid": "^8.3.3",
         "@types/aws-lambda": "^8.10.88",
+        "@types/uuid": "^8.3.3",
         "serverless-offline": "^8.3.1",
         "serverless-plugin-typescript": "^2.1.0"
     }

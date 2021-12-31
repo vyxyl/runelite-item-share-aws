@@ -1,32 +1,36 @@
 import { Handler, Context } from 'aws-lambda';
 import { getDatabase } from '../common/mongodb';
-import { getGroupId, getPlayerName } from '../common/request';
-import { badRequest, serverError, success } from '../common/response';
+import { createGetPlayerRequest as getRequest } from '../common/request';
+import {
+  ApiResponse,
+  badRequest,
+  serverError,
+  success,
+} from '../common/response';
 
-export const handler: Handler = async (event: any, context: Context) => {
+export const handler: Handler = async (
+  event: any,
+  context: Context
+): Promise<ApiResponse> => {
+  context.callbackWaitsForEmptyEventLoop = false;
+
   try {
-    context.callbackWaitsForEmptyEventLoop = false;
-
-    const groupId = getGroupId(event);
-    const name = getPlayerName(event);
-
-    if (groupId && name) {
-      const player = await getPlayer(groupId, name);
-      return success(player);
-    } else if (!groupId) {
-      return badRequest('Group ID is invalid');
-    } else if (!name) {
-      return badRequest('Player name is invalid');
-    } else {
-      return badRequest('Unable to parse request');
-    }
+    const response = await getPlayer(event);
+    return success(response);
   } catch (error) {
-    console.log({ error });
-    return serverError();
+    return handleError(error);
   }
 };
 
-async function getPlayer(groupId, name): Promise<any> {
+function handleError(error: any) {
+  console.log({ error });
+  return error?.errors ? badRequest(error) : serverError();
+}
+
+async function getPlayer(event: any): Promise<any> {
+  const { groupId, playerName } = await getRequest(event);
+  console.log({ request: { groupId, playerName } });
+
   const db = await getDatabase();
-  return await db.collection('players').findOne({ groupId, name });
+  return await db.collection('players').findOne({ groupId, name: playerName });
 }
