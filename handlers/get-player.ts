@@ -1,4 +1,8 @@
-import { Handler, Context } from 'aws-lambda';
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyHandler,
+  Context,
+} from 'aws-lambda';
 import { getDatabase } from '../common/mongodb';
 import { createGetPlayerRequest as getRequest } from '../common/request';
 import {
@@ -8,8 +12,8 @@ import {
   success,
 } from '../common/response';
 
-export const handler: Handler = async (
-  event: any,
+export const handler: APIGatewayProxyHandler = async (
+  event: APIGatewayProxyEvent,
   context: Context
 ): Promise<ApiResponse> => {
   context.callbackWaitsForEmptyEventLoop = false;
@@ -27,8 +31,9 @@ function handleError(error: any) {
   return error?.errors ? badRequest(error) : serverError();
 }
 
-async function getPlayer(event: any): Promise<any> {
+async function getPlayer(event: APIGatewayProxyEvent): Promise<any> {
   const { groupId, playerName } = await getRequest(event);
+
   console.log({ request: { groupId, playerName } });
 
   const db = await getDatabase();
