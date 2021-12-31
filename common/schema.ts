@@ -26,20 +26,26 @@ const groupId = yup.string().matches(GROUP_ID_REGEX).required();
 const playerName = yup.string().max(25).required();
 
 export const savePlayerData = yup.object().shape({
-  bank: yup
-    .array(yup.number())
-    .max(1100 * 2)
-    .required(),
+  bank: yup.object().shape({
+    items: yup
+      .array(yup.number())
+      .max(1100 * 2)
+      .required(),
+  }),
 
-  equipment: yup
-    .array(yup.number())
-    .max(11 * 3)
-    .required(),
+  equipment: yup.object().shape({
+    items: yup
+      .array(yup.number())
+      .max(11 * 3)
+      .required(),
+  }),
 
-  inventory: yup
-    .array(yup.number())
-    .max(28 * 2)
-    .required(),
+  inventory: yup.object().shape({
+    items: yup
+      .array(yup.number())
+      .max(28 * 2)
+      .required(),
+  }),
 });
 
 export const getPlayerNamesEvent = yup.object().shape({
