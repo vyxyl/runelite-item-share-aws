@@ -5,7 +5,13 @@ variablesResolutionMode: 20210326
 
 plugins:
   - serverless-plugin-typescript
+  - serverless-associate-waf
   - serverless-offline
+
+custom:
+  associateWaf:
+    name: runelite-item-share-firewall
+    version: Regional
 
 provider:
   name: aws
