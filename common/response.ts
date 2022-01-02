@@ -8,7 +8,7 @@ export function serverError(message: any = '') {
 }
 
 export function badRequest(message: any = '') {
-  return response(400, { message });
+  return response(400, message);
 }
 
 export function success(data: any = {}) {

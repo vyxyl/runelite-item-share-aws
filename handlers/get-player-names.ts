@@ -28,7 +28,7 @@ export const handler: APIGatewayProxyHandler = async (
 
 function handleError(error: any) {
   console.log({ error });
-  return error?.errors ? badRequest(error) : serverError();
+  return error?.errors ? badRequest(error?.errors) : serverError();
 }
 
 async function getPlayerNames(event: APIGatewayProxyEvent) {
