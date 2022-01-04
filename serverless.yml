@@ -36,6 +36,15 @@ provider:
         rateLimit: 200
 
 functions:
+  get-player-names:
+    handler: handlers/get-player-names.handler
+    environment: ${self:custom.environment}
+    events:
+      - http:
+          path: /player-names
+          method: get
+          private: true
+
   get-player:
     handler: handlers/get-player.handler
     environment: ${self:custom.environment}
@@ -54,11 +63,20 @@ functions:
           method: post
           private: true
 
-  get-player-names:
-    handler: handlers/get-player-names.handler
+  get-gim-storage:
+    handler: handlers/get-gim-storage.handler
     environment: ${self:custom.environment}
     events:
       - http:
-          path: /player-names
+          path: /gim-storage
           method: get
+          private: true
+
+  save-gim-storage:
+    handler: handlers/save-gim-storage.handler
+    environment: ${self:custom.environment}
+    events:
+      - http:
+          path: /gim-storage
+          method: post
           private: true

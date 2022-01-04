@@ -1,12 +1,18 @@
 import {
-  getPlayerEvent,
-  getPlayerNamesEvent,
+  GIMStorage,
   Player,
   RetrievePlayerNamesRequest,
   RetrievePlayerRequest,
-  savePlayerData,
-  savePlayerEvent,
+  SaveGIMStorageRequest,
   SavePlayerRequest,
+  RetrieveGIMStorageRequest,
+  getPlayerEvent,
+  getPlayerNamesEvent,
+  savePlayerData,
+  saveGIMStorageData,
+  savePlayerEvent,
+  saveGIMStorageEvent,
+  getGIMStorageEvent,
 } from './schema';
 
 const options = {
@@ -23,13 +29,35 @@ export async function createSavePlayerRequest(
   await savePlayerEvent.validate(event, options);
   const params = event.queryStringParameters;
 
-  const groupId = params.groupId;
-  const playerName = params.playerName;
   const player: Player = JSON.parse(event.body);
-
   await savePlayerData.validate(player, options);
 
-  return { groupId, playerName, player };
+  return { groupId: params.groupId, playerName: params.playerName, player };
+}
+
+export async function createGetGIMStorageRequest(
+  event: any
+): Promise<RetrieveGIMStorageRequest> {
+  await getGIMStorageEvent.validate(event, options);
+  const params = event.queryStringParameters;
+
+  return { groupId: params.groupId };
+}
+
+export async function createSaveGIMStorageRequest(
+  event: any
+): Promise<SaveGIMStorageRequest> {
+  await saveGIMStorageEvent.validate(event, options);
+  const params = event.queryStringParameters;
+
+  const storage: GIMStorage = JSON.parse(event.body);
+  await saveGIMStorageData.validate(storage, options);
+
+  return {
+    groupId: params.groupId,
+    updatedDate: storage.updatedDate,
+    items: storage.items,
+  };
 }
 
 export async function createGetPlayerRequest(
@@ -38,10 +66,7 @@ export async function createGetPlayerRequest(
   await getPlayerEvent.validate(event, options);
   const params = event.queryStringParameters;
 
-  return {
-    groupId: params.groupId,
-    playerName: params.playerName,
-  };
+  return { groupId: params.groupId, playerName: params.playerName };
 }
 
 export async function createGetPlayerNamesRequest(

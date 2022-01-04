@@ -4,7 +4,7 @@ import {
   Context,
 } from 'aws-lambda';
 import { getDatabase } from '../common/mongodb';
-import { createGetPlayerRequest as getRequest } from '../common/request';
+import { createGetGIMStorageRequest as getRequest } from '../common/request';
 import {
   ApiResponse,
   badRequest,
@@ -20,7 +20,7 @@ export const handler: APIGatewayProxyHandler = async (
   console.log({ event });
 
   try {
-    const response = await getPlayer(event);
+    const response = await getGimStorage(event);
     return success(response);
   } catch (error) {
     return handleError(error);
@@ -32,11 +32,11 @@ function handleError(error: any) {
   return error?.errors ? badRequest(error?.errors) : serverError();
 }
 
-async function getPlayer(event: APIGatewayProxyEvent): Promise<any> {
-  const { groupId, playerName } = await getRequest(event);
+async function getGimStorage(event: APIGatewayProxyEvent): Promise<any> {
+  const { groupId } = await getRequest(event);
 
-  console.log({ request: { groupId, playerName } });
+  console.log({ request: { groupId } });
 
   const db = await getDatabase();
-  return await db.collection('players').findOne({ groupId, name: playerName });
+  return await db.collection('gim-storage').findOne({ groupId });
 }

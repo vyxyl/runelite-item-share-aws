@@ -1,10 +1,10 @@
 import {
-  APIGatewayProxyEvent,
-  APIGatewayProxyHandler,
   Context,
+  APIGatewayProxyHandler,
+  APIGatewayProxyEvent,
 } from 'aws-lambda';
 import { getDatabase } from '../common/mongodb';
-import { createGetPlayerRequest as getRequest } from '../common/request';
+import { createSaveGIMStorageRequest as getRequest } from '../common/request';
 import {
   ApiResponse,
   badRequest,
@@ -20,8 +20,8 @@ export const handler: APIGatewayProxyHandler = async (
   console.log({ event });
 
   try {
-    const response = await getPlayer(event);
-    return success(response);
+    await saveGIMStorage(event);
+    return success();
   } catch (error) {
     return handleError(error);
   }
@@ -32,11 +32,19 @@ function handleError(error: any) {
   return error?.errors ? badRequest(error?.errors) : serverError();
 }
 
-async function getPlayer(event: APIGatewayProxyEvent): Promise<any> {
-  const { groupId, playerName } = await getRequest(event);
+async function saveGIMStorage(event: APIGatewayProxyEvent) {
+  const { groupId, updatedDate, items } = await getRequest(event);
 
-  console.log({ request: { groupId, playerName } });
+  console.log({ request: { groupId, updatedDate, items } });
+
+  const data = {
+    groupId,
+    items,
+    updatedDate: new Date(),
+  };
 
   const db = await getDatabase();
-  return await db.collection('players').findOne({ groupId, name: playerName });
+  await db
+    .collection('gim-storage')
+    .updateOne({ groupId }, { $set: data }, { upsert: true });
 }

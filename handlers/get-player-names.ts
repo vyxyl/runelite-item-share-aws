@@ -17,6 +17,7 @@ export const handler: APIGatewayProxyHandler = async (
   context: Context
 ): Promise<ApiResponse> => {
   context.callbackWaitsForEmptyEventLoop = false;
+  console.log({ event });
 
   try {
     const response = await getPlayerNames(event);

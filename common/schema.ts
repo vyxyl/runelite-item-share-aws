@@ -1,6 +1,11 @@
 import * as yup from 'yup';
 import { GROUP_ID_REGEX } from './request';
 
+export interface GIMStorage {
+  updatedDate: Date;
+  items: number[];
+}
+
 export interface Player {
   bank: number[];
   inventory: number[];
@@ -11,6 +16,16 @@ export interface SavePlayerRequest {
   groupId: string;
   playerName: string;
   player: Player;
+}
+
+export interface RetrieveGIMStorageRequest {
+  groupId: string;
+}
+
+export interface SaveGIMStorageRequest {
+  groupId: string;
+  updatedDate: Date;
+  items: number[];
 }
 
 export interface RetrievePlayerRequest {
@@ -24,6 +39,17 @@ export interface RetrievePlayerNamesRequest {
 
 const groupId = yup.string().matches(GROUP_ID_REGEX).required();
 const playerName = yup.string().max(25).required();
+
+export const saveGIMStorageData = yup
+  .object()
+  .shape({
+    updatedDate: yup.date().required(),
+    items: yup
+      .array(yup.number())
+      .max(1100 * 2)
+      .required(),
+  })
+  .required();
 
 export const savePlayerData = yup.object().shape({
   bank: yup
@@ -68,4 +94,12 @@ export const getPlayerEvent = yup.object().shape({
 export const savePlayerEvent = yup.object().shape({
   body: yup.string().required(),
   queryStringParameters: yup.object().shape({ groupId, playerName }).required(),
+});
+export const getGIMStorageEvent = yup.object().shape({
+  queryStringParameters: yup.object().shape({ groupId }).required(),
+});
+
+export const saveGIMStorageEvent = yup.object().shape({
+  body: yup.string().required(),
+  queryStringParameters: yup.object().shape({ groupId }).required(),
 });
