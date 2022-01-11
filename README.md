@@ -30,7 +30,7 @@ https://www.serverless.com
 
 * Open a terminal to the root directory of this project
 
-  * run `serverless deploy`
+  * Run `serverless deploy`
 
 * The terminal will print the API Endpoint URLs and API Key `runelite-item-share-api-key`
 
