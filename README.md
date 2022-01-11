@@ -22,6 +22,10 @@ https://www.serverless.com
 
   * Add any rules you would like to restrict what requests are allowed
 
+  * The dedicated server currently runs the following:
+
+    <img src="./assets/firewall-rules.png" width="400">
+
 ## Deploying the server
 
 * Open a terminal to the root directory of this project
