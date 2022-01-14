@@ -32,7 +32,7 @@ https://www.serverless.com
 
   * The MongoDB server has a database named `itemshare` and 2 collections named `gim-storage` and `players`
 
-    <img src="./assets/mongodb.png" width="400">
+    <img src="./assets/mongodb.png" width="200">
 
   * Add your MongoDB server values to the AWS parameter store: 
     * `item-share-mongodb-cluster`
