@@ -30,7 +30,7 @@ https://www.serverless.com
 
   * A free tier server is available at https://www.mongodb.com/cloud/atlas/register
 
-  * The MongoDB server has a database named `itemshare` and 2 collections named `gim-storage` and `players`
+  * Add a database named `itemshare` and 2 collections named `gim-storage` and `players`
 
     <img src="./assets/mongodb.png" width="200">
 
