@@ -36,7 +36,7 @@ https://www.serverless.com
     * `item-share-mongodb-password`
     * `item-share-mongodb-username`
 
-  <img src="./assets/parameter-store.png" width="400">
+      <img src="./assets/parameter-store.png" width="400">
 
 ## Deploying the server
 
