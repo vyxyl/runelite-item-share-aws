@@ -50,4 +50,8 @@ https://www.serverless.com
 
 * The terminal will print the API Endpoint URLs and API Key `runelite-item-share-api-key`
 
-  * This value of `runelite-item-share-api-key` needs to be put in the `x-api-key` header of all requests to the API
+  * The value of `runelite-item-share-api-key` needs to be put in the `x-api-key` header for all requests to the API
+
+  * Example in postman:
+
+    <img src="./assets/postman.png">
