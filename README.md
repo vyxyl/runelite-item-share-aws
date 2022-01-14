@@ -26,6 +26,16 @@ https://www.serverless.com
 
     <img src="./assets/firewall-rules.png" width="400">
 
+* You have a MongoDB server running somewhere
+
+  * A free tier server is available at https://www.mongodb.com/cloud/atlas/register
+
+  * Add your MongoDB server values to the AWS parameter store: 
+    * `item-share-mongodb-cluster`
+    * `item-share-mongodb-database`
+    * `item-share-mongodb-password`
+    * `item-share-mongodb-username`
+
 ## Deploying the server
 
 * Open a terminal to the root directory of this project
